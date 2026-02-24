@@ -1,0 +1,32 @@
+package com.example.movieapp.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "favorites", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "tmdb_id"}))
+@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+public class Favorite {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(name = "tmdb_id", nullable = false)
+    private Long tmdbId;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) createdAt = LocalDateTime.now();
+    }
+}
+
